@@ -1,0 +1,21 @@
+lender_id,lender_name,lender_type,registration_id,is_data_sharing,created_at
+1,GCB Bank,regulated_bank,BOG-001,1,2026-05-02 07:13:54
+2,Ecobank Ghana,regulated_bank,BOG-002,1,2026-05-02 07:13:54
+3,Stanbic Bank,regulated_bank,BOG-003,1,2026-05-02 07:13:54
+4,Access Bank,regulated_bank,BOG-004,1,2026-05-02 07:13:54
+5,FNB Ghana,regulated_bank,BOG-005,1,2026-05-02 07:13:54
+6,Opportunity International,regulated_mfi,MFI-101,1,2026-05-02 07:13:54
+7,Sinapi Aba Trust,regulated_mfi,MFI-102,1,2026-05-02 07:13:54
+8,VisionFund Ghana,regulated_mfi,MFI-103,1,2026-05-02 07:13:54
+9,QuickCash Digital,unregulated_digital,,0,2026-05-02 07:13:54
+10,FlashLoan GH,unregulated_digital,,0,2026-05-02 07:13:54
+11,InstantMoney,unregulated_digital,,0,2026-05-02 07:13:54
+12,SpeedyCash,unregulated_digital,,0,2026-05-02 07:13:54
+13,CloudLend,unregulated_digital,,0,2026-05-02 07:13:54
+14,PrimeTrust Bank,regulated_bank,BOG-006,1,2026-05-02 07:13:54
+15,Republic Bank,regulated_bank,BOG-007,1,2026-05-02 07:13:54
+16,ARB Apex Bank,regulated_bank,BOG-008,1,2026-05-02 07:13:54
+17,First National Bank,regulated_bank,BOG-009,1,2026-05-02 07:13:54
+18,Zadok Microfinance,regulated_mfi,MFI-104,1,2026-05-02 07:13:54
+19,Pawpaw Credit,unregulated_digital,,0,2026-05-02 07:13:54
+20,SafeLoan,unregulated_digital,,0,2026-05-02 07:13:54

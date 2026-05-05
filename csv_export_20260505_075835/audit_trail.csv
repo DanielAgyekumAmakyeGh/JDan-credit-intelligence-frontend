@@ -1,0 +1,4 @@
+audit_id,user_id,action_type,table_name,record_id,old_values,new_values,ip_address,user_agent,created_at
+1,analyst@xdsdata.gh,QUERY,borrower,100,,,192.168.1.100,Mozilla/5.0,2026-05-02 07:13:56
+2,system,SCORE_UPDATE,credit_score,5,"{""credit_score"":620}","{""credit_score"":645}",127.0.0.1,internal,2026-05-02 07:13:56
+3,dispute_resolver,DISPUTE_RESOLVE,dispute_log,3,"{""status"":""open""}","{""status"":""resolved""}",10.0.0.5,admin_console,2026-05-02 07:13:56

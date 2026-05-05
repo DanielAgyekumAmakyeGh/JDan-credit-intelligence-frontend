@@ -1,0 +1,5 @@
+dispute_id,borrower_id,dispute_type,description,status,resolution_notes,dispute_date,resolved_date,resolved_by
+1,5,credit_report_error,I do not recognize the loan from QuickCash Digital,open,,2026-05-02 07:13:56,,
+2,12,fraudulent_loan,Someone used my Ghana Card to take a loan,investigating,,2026-04-27 07:13:56,,
+3,7,identity_mixup,My name is misspelled on the credit report,resolved,,2026-04-12 07:13:56,2026-04-22 07:13:56,admin@xdsdata.gh
+4,22,other,The loan amount is incorrect,rejected,,2026-04-17 07:13:56,2026-04-20 07:13:56,disputes@xdsdata.gh

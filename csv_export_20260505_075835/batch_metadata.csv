@@ -1,0 +1,4 @@
+batch_id,batch_name,start_time,end_time,status,records_processed,error_message,triggered_by,created_at
+1,daily_score_update,2026-05-01 07:13:56,2026-05-01 09:13:56,completed,500,,system,2026-05-02 07:13:56
+2,monthly_npl_report,2026-04-27 07:13:56,2026-04-27 07:43:56,completed,250,,analyst@xdsdata.gh,2026-05-02 07:13:56
+3,failed_etl_pipeline,2026-04-30 07:13:56,2026-04-30 07:23:56,failed,0,,automation,2026-05-02 07:13:56
