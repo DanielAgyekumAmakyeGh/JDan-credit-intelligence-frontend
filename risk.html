@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Intelligence Bureau - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: url('https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1600') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+        
+        /* Overlay for readability */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 58, 95, 0.85);
+            z-index: -1;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: rgba(20, 40, 60, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 100;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar h3 {
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .sidebar h3 small {
+            font-size: 10px;
+            opacity: 0.7;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #2ECC71;
+        }
+        
+        .nav-item.active {
+            background: rgba(46,204,113,0.2);
+            border-left-color: #2ECC71;
+        }
+        
+        /* Main Content */
+        .main {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header h1 {
+            color: #1E3A5F;
+            font-size: 1.5rem;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1E3A5F;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .card h3 {
+            color: #1E3A5F;
+            margin-bottom: 15px;
+            border-left: 3px solid #2ECC71;
+            padding-left: 10px;
+            font-size: 1.1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #1E3A5F;
+            font-weight: 600;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        
+        button {
+            background: #1E3A5F;
+            color: white;
+            cursor: pointer;
+            border: none;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #2C5F8A;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-green {
+            background: #2ECC7120;
+            color: #2ECC71;
+        }
+        
+        .badge-red {
+            background: #E74C3C20;
+            color: #E74C3C;
+        }
+        
+        .badge-orange {
+            background: #F39C1220;
+            color: #F39C12;
+        }
+        
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric-box {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .metric-val {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1E3A5F;
+        }
+        
+        .metric-lab {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .insight-box {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border-left: 3px solid #F39C12;
+        }
+        
+        .warning-box {
+            padding: 15px;
+            background: #FEE;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border-left: 3px solid #E74C3C;
+        }
+        
+        .success-box {
+            padding: 15px;
+            background: #EFE;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            border-left: 3px solid #2ECC71;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main {
+                margin-left: 0;
+            }
+            .stats-grid, .metric-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>Credit Bureau<br><small>Ghana</small></h3>
+    <div class="nav-item active" data-page="exec">Executive Summary</div>
+    <div class="nav-item" data-page="npl">NPL Trends</div>
+    <div class="nav-item" data-page="lender">Lender Performance</div>
+    <div class="nav-item" data-page="purpose">Loan Purpose Analysis</div>
+    <div class="nav-item" data-page="stacking">Loan Stacking Check</div>
+    <div class="nav-item" data-page="afford">Affordability Tool</div>
+    <div class="nav-item" data-page="model">ML Model Performance</div>
+</div>
+
+<div class="main">
+    <!-- Page 1: Executive Summary -->
+    <div id="page-exec" class="page active">
+        <div class="header">
+            <h1>Executive Summary</h1>
+            <p>Real-time credit intelligence dashboard</p>
+        </div>
+        <div class="stats-grid" id="execStats"></div>
+        <div class="card">
+            <h3>NPL Trend (Last 12 Months)</h3>
+            <div id="trendChart"></div>
+        </div>
+        <div class="card">
+            <h3>Key Insights</h3>
+            <div id="insights"></div>
+        </div>
+    </div>
+    
+    <!-- Page 2: NPL Trends -->
+    <div id="page-npl" class="page">
+        <div class="header">
+            <h1>NPL Trends Analysis</h1>
+            <p>Monthly Non-Performing Loan tracking</p>
+        </div>
+        <div class="card">
+            <h3>Monthly NPL Data</h3>
+            <div id="nplTable"></div>
+        </div>
+    </div>
+    
+    <!-- Page 3: Lender Performance -->
+    <div id="page-lender" class="page">
+        <div class="header">
+            <h1>Lender Performance Dashboard</h1>
+            <p>Default rates by lender</p>
+        </div>
+        <div class="card">
+            <h3>Lender Rankings</h3>
+            <div id="lenderTable"></div>
+        </div>
+    </div>
+    
+    <!-- Page 4: Loan Purpose -->
+    <div id="page-purpose" class="page">
+        <div class="header">
+            <h1>Loan Purpose Analysis</h1>
+            <p>Default rates by purpose category</p>
+        </div>
+        <div class="card">
+            <h3>Purpose Statistics</h3>
+            <div id="purposeTable"></div>
+        </div>
+    </div>
+    
+    <!-- Page 5: Loan Stacking -->
+    <div id="page-stacking" class="page">
+        <div class="header">
+            <h1>Loan Stacking Prevention</h1>
+            <p>Real-time same-day loan detection</p>
+        </div>
+        <div class="card">
+            <h3>Check Borrower</h3>
+            <select id="stackSelect">
+                <option value="">-- Select a borrower --</option>
+            </select>
+            <button onclick="checkStacking()">Check for Stacking</button>
+            <div id="stackResult" style="margin-top: 15px;"></div>
+        </div>
+        <div class="card">
+            <h3>What is Loan Stacking?</h3>
+            <p>Loan stacking occurs when a borrower takes multiple loans from different lenders on the same day. This dashboard checks for same-day loans to prevent over-indebtedness.</p>
+        </div>
+    </div>
+    
+    <!-- Page 6: Affordability Tool -->
+    <div id="page-afford" class="page">
+        <div class="header">
+            <h1>Borrower Affordability Calculator</h1>
+            <p>Debt-to-Income based safe borrowing capacity</p>
+        </div>
+        <div class="card">
+            <h3>Select Borrower</h3>
+            <select id="affordSelect">
+                <option value="">-- Select a borrower --</option>
+            </select>
+            <div id="affordResult" style="margin-top: 15px;"></div>
+        </div>
+        <div class="card">
+            <h3>Manual Calculator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input type="number" id="manIncome" placeholder="Monthly Income (GHS)" value="3000" style="padding: 8px;">
+                <input type="number" id="manDebt" placeholder="Total Debt (GHS)" value="2000" style="padding: 8px;">
+            </div>
+            <button onclick="calcManual()">Calculate Affordability</button>
+            <div id="manualRes" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+    
+    <!-- Page 7: ML Model -->
+    <div id="page-model" class="page">
+        <div class="header">
+            <h1>Stacked Ensemble Model Performance</h1>
+            <p>XGBoost + Random Forest + Gradient Boosting + AdaBoost with Logistic Regression meta-model</p>
+        </div>
+        <div class="stats-grid" id="modelStats"></div>
+        <div class="card">
+            <h3>Confusion Matrix</h3>
+            <div id="cm"></div>
+        </div>
+        <div class="card">
+            <h3>Feature Importance</h3>
+            <div id="fi"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>2026 Credit Intelligence Bureau | Stacked Ensemble AUC: 0.8936 | Recall: 96.7%</p>
+        <p>Source: github.com/DanielAgyekumAmakyeGh/credit-intelligence-bureau</p>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const borrowers = [
+    { id:1, name:"Kwame Mensah", score:720, income:5500, debt:25000, loans:2, defaults:0, risk:"Low" },
+    { id:2, name:"Akosua Osei", score:680, income:3800, debt:18000, loans:1, defaults:0, risk:"Low" },
+    { id:3, name:"Kofi Annan", score:590, income:2500, debt:35000, loans:3, defaults:1, risk:"Medium" },
+    { id:4, name:"Ama Asare", score:450, income:1500, debt:45000, loans:4, defaults:2, risk:"High" },
+    { id:5, name:"Yaw Boateng", score:710, income:8000, debt:15000, loans:1, defaults:0, risk:"Low" },
+    { id:6, name:"Adwoa Frimpong", score:650, income:4200, debt:22000, loans:2, defaults:0, risk:"Medium" },
+    { id:7, name:"Esi Tetteh", score:580, income:2800, debt:30000, loans:2, defaults:1, risk:"Medium" },
+    { id:8, name:"Kojo Adjei", score:500, income:1800, debt:40000, loans:3, defaults:1, risk:"High" },
+    { id:9, name:"Abena Opoku", score:730, income:6200, debt:10000, loans:1, defaults:0, risk:"Low" },
+    { id:10, name:"Akwasi Agyeman", score:670, income:4800, debt:20000, loans:2, defaults:0, risk:"Low" }
+];
+
+const lenders = [
+    { name:"Absa Bank", type:"Bank", loans:145, defaults:18, rate:12.4 },
+    { name:"GCB Bank", type:"Bank", loans:132, defaults:16, rate:12.1 },
+    { name:"Stanbic Bank", type:"Bank", loans:98, defaults:11, rate:11.2 },
+    { name:"MTN MoMo", type:"Fintech", loans:210, defaults:42, rate:20.0 },
+    { name:"Telecel Cash", type:"Fintech", loans:178, defaults:32, rate:18.0 },
+    { name:"Fido", type:"Fintech", loans:95, defaults:24, rate:25.3 },
+    { name:"Bayport", type:"Microfinance", loans:85, defaults:13, rate:15.3 }
+];
+
+const purposes = [
+    { name:"Business", loans:245, defaults:26, rate:10.6 },
+    { name:"Emergency", loans:187, defaults:65, rate:34.8 },
+    { name:"Education", loans:98, defaults:8, rate:8.2 },
+    { name:"Medical", loans:76, defaults:17, rate:22.4 },
+    { name:"Housing", loans:112, defaults:14, rate:12.5 },
+    { name:"Personal", loans:125, defaults:16, rate:12.8 }
+];
+
+const nplData = [12.5, 13.2, 14.1, 15.0, 14.5, 13.8, 14.2, 15.5, 14.8, 13.5, 12.9, 13.2];
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const stackingLoans = { 1:0, 2:0, 3:2, 4:3, 5:0, 6:1, 7:1, 8:2, 9:0, 10:0 };
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        const pageName = this.getAttribute('data-page');
+        
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        
+        const activePage = document.getElementById('page-' + pageName);
+        if (activePage) {
+            activePage.classList.add('active');
+        }
+    });
+});
+
+// ============================================================
+// PAGE 1: EXECUTIVE SUMMARY
+// ============================================================
+
+function loadExecutive() {
+    const totalLoans = lenders.reduce((s, l) => s + l.loans, 0);
+    const totalDefaults = lenders.reduce((s, l) => s + l.defaults, 0);
+    const defaultRate = (totalDefaults / totalLoans * 100).toFixed(1);
+    
+    document.getElementById('execStats').innerHTML = `
+        <div class="stat-card"><div class="stat-value">${totalLoans.toLocaleString()}</div><div class="stat-label">Total Loans</div></div>
+        <div class="stat-card"><div class="stat-value">${defaultRate}%</div><div class="stat-label">Default Rate</div></div>
+        <div class="stat-card"><div class="stat-value">GHS 12.5k</div><div class="stat-label">Avg Loan Amount</div></div>
+        <div class="stat-card"><div class="stat-value">${borrowers.length}</div><div class="stat-label">Borrowers</div></div>
+    `;
+    
+    let bars = '';
+    for (let i = 0; i < nplData.length; i++) {
+        let color = nplData[i] > 15 ? '#E74C3C' : '#2ECC71';
+        let width = (nplData[i] / 20) * 300;
+        bars += `<div style="margin-bottom: 8px;">
+            <span style="display: inline-block; width: 45px;">${months[i]}</span>
+            <span style="display: inline-block; width: 60px;">${nplData[i]}%</span>
+            <div style="display: inline-block; width: 300px; background: #eee; border-radius: 4px;">
+                <div style="width: ${width}px; height: 20px; background: ${color}; border-radius: 4px;"></div>
+            </div>
+        </div>`;
+    }
+    document.getElementById('trendChart').innerHTML = bars;
+    
+    document.getElementById('insights').innerHTML = `
+        <div class="insight-box">Emergency loans have 34.8% default rate - highest risk category</div>
+        <div class="insight-box" style="margin-top: 10px;">Fintech lenders have 2x higher default rates than traditional banks</div>
+        <div class="insight-box" style="margin-top: 10px;">Stacked Ensemble Model achieves 89.4% AUC and catches 96.7% of defaults</div>
+        <div class="insight-box" style="margin-top: 10px;">Target NPL ratio is below 15% | Current: 13.2%</div>
+    `;
+}
+
+// ============================================================
+// PAGE 2: NPL TRENDS
+// ============================================================
+
+function loadNPL() {
+    let html = '表<table></td><th>Month</th><th>NPL Ratio</th><th>Status</th></tr>';
+    for (let i = 0; i < nplData.length; i++) {
+        let status = nplData[i] > 15 ? '<span class="badge badge-red">Above Target</span>' : '<span class="badge badge-green">On Track</span>';
+        html += `<tr><td>${months[i]}</td><td><strong>${nplData[i]}%</strong></td><td>${status}</td></tr>`;
+    }
+    html += '表</table>';
+    document.getElementById('nplTable').innerHTML = html;
+}
+
+// ============================================================
+// PAGE 3: LENDER PERFORMANCE
+// ============================================================
+
+function loadLender() {
+    let html = '表<table><tr><th>Lender</th><th>Type</th><th>Loans</th><th>Defaults</th><th>Default Rate</th></tr>';
+    for (let l of lenders) {
+        let badge = l.rate > 20 ? 'badge-red' : (l.rate > 15 ? 'badge-orange' : 'badge-green');
+        html += `<tr>
+            <td>${l.name}</td>
+            <td>${l.type}</td>
+            <td>${l.loans}</td>
+            <td>${l.defaults}</td>
+            <td><span class="badge ${badge}">${l.rate}%</span></td>
+        </tr>`;
+    }
+    html += '表</table>';
+    document.getElementById('lenderTable').innerHTML = html;
+}
+
+// ============================================================
+// PAGE 4: LOAN PURPOSE
+// ============================================================
+
+function loadPurpose() {
+    let html = '表<table><tr><th>Purpose</th><th>Loans</th><th>Defaults</th><th>Default Rate</th></tr>';
+    for (let p of purposes) {
+        let badge = p.rate > 25 ? 'badge-red' : (p.rate > 15 ? 'badge-orange' : 'badge-green');
+        html += `<tr>
+            <td>${p.name}</td>
+            <td>${p.loans}</td>
+            <td>${p.defaults}</td>
+            <td><span class="badge ${badge}">${p.rate}%</span></td>
+        </tr>`;
+    }
+    html += '表</table><div class="warning-box" style="margin-top: 15px;">Emergency loans show 34.8% default rate - consider stricter underwriting criteria</div>';
+    document.getElementById('purposeTable').innerHTML = html;
+}
+
+// ============================================================
+// PAGE 5: LOAN STACKING
+// ============================================================
+
+function loadStackingDropdown() {
+    let html = '<option value="">-- Select a borrower --</option>';
+    for (let b of borrowers) {
+        html += `<option value="${b.id}">${b.name} (Score: ${b.score})</option>`;
+    }
+    document.getElementById('stackSelect').innerHTML = html;
+}
+
+function checkStacking() {
+    const id = parseInt(document.getElementById('stackSelect').value);
+    if (!id) {
+        document.getElementById('stackResult').innerHTML = '<div class="card">Please select a borrower</div>';
+        return;
+    }
+    const borrower = borrowers.find(b => b.id === id);
+    const loansToday = stackingLoans[id] || 0;
+    
+    if (loansToday > 0) {
+        document.getElementById('stackResult').innerHTML = `
+            <div class="warning-box">
+                <strong>ALERT: Loan Stacking Detected</strong><br><br>
+                Borrower: ${borrower.name}<br>
+                Same-day loans taken today: ${loansToday}<br><br>
+                Recommendation: DO NOT approve new loan today. Contact borrower to verify existing loans.
+            </div>
+        `;
+    } else {
+        document.getElementById('stackResult').innerHTML = `
+            <div class="success-box">
+                <strong>No Loan Stacking Detected</strong><br><br>
+                Borrower: ${borrower.name}<br>
+                Same-day loans today: 0<br><br>
+                Recommendation: Proceed with loan approval process.
+            </div>
+        `;
+    }
+}
+
+// ============================================================
+// PAGE 6: AFFORDABILITY TOOL
+// ============================================================
+
+function loadAffordabilityDropdown() {
+    let html = '<option value="">-- Select a borrower --</option>';
+    for (let b of borrowers) {
+        html += `<option value="${b.id}">${b.name} (Score: ${b.score})</option>`;
+    }
+    document.getElementById('affordSelect').innerHTML = html;
+}
+
+document.getElementById('affordSelect').addEventListener('change', function() {
+    const id = parseInt(this.value);
+    if (!id) return;
+    const borrower = borrowers.find(b => b.id === id);
+    
+    const maxPayment = borrower.income * 0.30;
+    const existingPayment = borrower.debt / 12;
+    const available = Math.max(0, maxPayment - existingPayment);
+    const recommended = available * 12;
+    
+    let decision = '';
+    let decisionClass = '';
+    if (available >= 500) {
+        decision = 'APPROVE';
+        decisionClass = 'badge-green';
+    } else if (available > 0) {
+        decision = 'LIMITED APPROVAL';
+        decisionClass = 'badge-orange';
+    } else {
+        decision = 'DECLINE';
+        decisionClass = 'badge-red';
+    }
+    
+    document.getElementById('affordResult').innerHTML = `
+        <div class="metric-row">
+            <div class="metric-box"><div class="metric-val">${borrower.score}</div><div class="metric-lab">Credit Score</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${borrower.income.toLocaleString()}</div><div class="metric-lab">Monthly Income</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${borrower.debt.toLocaleString()}</div><div class="metric-lab">Total Debt</div></div>
+            <div class="metric-box"><div class="metric-val">${borrower.loans}</div><div class="metric-lab">Active Loans</div></div>
+        </div>
+        <div class="metric-row">
+            <div class="metric-box"><div class="metric-val">GHS ${maxPayment.toLocaleString()}</div><div class="metric-lab">Max Safe (30% DTI)</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${existingPayment.toLocaleString()}</div><div class="metric-lab">Existing Monthly</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${available.toLocaleString()}</div><div class="metric-lab">Available Monthly</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${recommended.toLocaleString()}</div><div class="metric-lab">Recommended Loan (12mo)</div></div>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            Decision: <span class="badge ${decisionClass}" style="font-size: 1rem; padding: 8px 20px;">${decision}</span>
+        </div>
+    `;
+});
+
+function calcManual() {
+    const income = parseFloat(document.getElementById('manIncome').value) || 0;
+    const debt = parseFloat(document.getElementById('manDebt').value) || 0;
+    
+    const maxPayment = income * 0.30;
+    const existingPayment = debt / 12;
+    const available = Math.max(0, maxPayment - existingPayment);
+    const recommended = available * 12;
+    
+    let decision = '';
+    let decisionColor = '';
+    if (available >= 500) {
+        decision = 'APPROVE';
+        decisionColor = '#2ECC71';
+    } else if (available > 0) {
+        decision = 'LIMITED APPROVAL';
+        decisionColor = '#F39C12';
+    } else {
+        decision = 'DECLINE';
+        decisionColor = '#E74C3C';
+    }
+    
+    document.getElementById('manualRes').innerHTML = `
+        <div class="metric-row">
+            <div class="metric-box"><div class="metric-val">GHS ${maxPayment.toLocaleString()}</div><div class="metric-lab">Max Safe Payment</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${existingPayment.toLocaleString()}</div><div class="metric-lab">Existing Monthly</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${available.toLocaleString()}</div><div class="metric-lab">Available Monthly</div></div>
+            <div class="metric-box"><div class="metric-val">GHS ${recommended.toLocaleString()}</div><div class="metric-lab">Recommended Loan</div></div>
+        </div>
+        <div style="text-align: center; margin-top: 15px; padding: 15px; background: ${decisionColor}20; border-radius: 8px;">
+            <strong>Decision: ${decision}</strong>
+        </div>
+    `;
+}
+
+// ============================================================
+// PAGE 7: ML MODEL
+// ============================================================
+
+function loadModel() {
+    document.getElementById('modelStats').innerHTML = `
+        <div class="stat-card"><div class="stat-value">89.4%</div><div class="stat-label">AUC-ROC</div></div>
+        <div class="stat-card"><div class="stat-value">96.7%</div><div class="stat-label">Recall</div></div>
+        <div class="stat-card"><div class="stat-value">51.3%</div><div class="stat-label">Precision</div></div>
+        <div class="stat-card"><div class="stat-value">80.8%</div><div class="stat-label">Accuracy</div></div>
+    `;
+    
+    document.getElementById('cm').innerHTML = `
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="background: #2ECC7120; padding: 15px; border-radius: 8px;">
+                    <span style="font-size: 24px; font-weight: bold;">182</span><br>True Negatives
+                </div>
+                <div style="margin-top: 5px;">Paid correctly</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="background: #E74C3C20; padding: 15px; border-radius: 8px;">
+                    <span style="font-size: 24px; font-weight: bold;">55</span><br>False Positives
+                </div>
+                <div style="margin-top: 5px;">Paid flagged as default</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="background: #E74C3C20; padding: 15px; border-radius: 8px;">
+                    <span style="font-size: 24px; font-weight: bold;">2</span><br>False Negatives
+                </div>
+                <div style="margin-top: 5px;">Defaults missed</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="background: #2ECC7120; padding: 15px; border-radius: 8px;">
+                    <span style="font-size: 24px; font-weight: bold;">58</span><br>True Positives
+                </div>
+                <div style="margin-top: 5px;">Defaults caught</div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('fi').innerHTML = `
+        <div><strong>Credit Score</strong> <span style="float: right;">23%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 23%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+        <div style="margin-top: 10px;"><strong>Past Defaults</strong> <span style="float: right;">16%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 16%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+        <div style="margin-top: 10px;"><strong>Max Days Past Due</strong> <span style="float: right;">11%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 11%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+        <div style="margin-top: 10px;"><strong>DTI Ratio</strong> <span style="float: right;">10%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 10%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+        <div style="margin-top: 10px;"><strong>Active Loans</strong> <span style="float: right;">8%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 8%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+        <div style="margin-top: 10px;"><strong>Monthly Income</strong> <span style="float: right;">7%</span><div style="background: #eee; margin-top: 5px;"><div style="width: 7%; height: 20px; background: #1E3A5F; border-radius: 4px;"></div></div></div>
+    `;
+}
+
+// ============================================================
+// INITIALIZE ALL PAGES
+// ============================================================
+
+loadExecutive();
+loadNPL();
+loadLender();
+loadPurpose();
+loadStackingDropdown();
+loadAffordabilityDropdown();
+loadModel();
+</script>
+</body>
+</html>

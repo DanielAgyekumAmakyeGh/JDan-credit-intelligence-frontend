@@ -91,7 +91,7 @@ def extract_data():
     WHERE l.loan_status IN ('paid', 'default')
     """
     
-    print("\n📥 Extracting data from MySQL...")
+    print("\nExtracting data from MySQL...")
     cursor = conn.cursor()
     cursor.execute(query)
     columns = [desc[0] for desc in cursor.description]
@@ -104,8 +104,8 @@ def extract_data():
     for col in df.columns:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
     
-    print(f"✓ Extracted {len(df)} loan records")
-    print(f"✓ Default rate: {df['default_flag'].mean()*100:.1f}%")
+    print(f"Extracted {len(df)} loan records")
+    print(f"Default rate: {df['default_flag'].mean()*100:.1f}%")
     
     return df
 
@@ -174,11 +174,11 @@ def engineer_features(df):
         df['tenor_risk'] * 100 * 0.10
     )
     
-    print(f"✓ Created {len(df.columns)} total features")
+    print(f"Created {len(df.columns)} total features")
     
     # Display feature correlations with target
     corr = df.corr(numeric_only=True)['default_flag'].abs().sort_values(ascending=False)
-    print("\n📊 Top 10 features correlated with default:")
+    print("\nTop 10 features correlated with default:")
     for feat, val in corr[1:11].items():
         print(f"   {feat}: {val:.4f}")
     
@@ -255,7 +255,7 @@ def train_stacked_ensemble(X_train, y_train, X_test, y_test):
     X_test_scaled = scaler.transform(X_test)
     
     # Handle class imbalance with SMOTE-Tomek (as specified in report)
-    print("\n📊 Handling class imbalance with SMOTE-Tomek...")
+    print("\nHandling class imbalance with SMOTE-Tomek...")
     smote_tomek = SMOTETomek(random_state=42, sampling_strategy=0.4)
     X_train_balanced, y_train_balanced = smote_tomek.fit_resample(X_train_scaled, y_train)
     print(f"   Original training size: {len(X_train_scaled)}")
@@ -266,7 +266,7 @@ def train_stacked_ensemble(X_train, y_train, X_test, y_test):
     base_models, meta_model = create_stacked_ensemble()
     
     # Level 1: Train base models and collect predictions
-    print("\n📊 Level 1: Training Base Models...")
+    print("\nLevel 1: Training Base Models...")
     
     # For storing predictions
     train_meta_features = np.zeros((X_train_balanced.shape[0], len(base_models)))
@@ -302,7 +302,7 @@ def train_stacked_ensemble(X_train, y_train, X_test, y_test):
         print(f"      CV AUC: {cv_auc:.4f}")
     
     # Level 2: Train meta-model
-    print("\n📊 Level 2: Training Meta-Model (Logistic Regression)...")
+    print("\nLevel 2: Training Meta-Model (Logistic Regression)...")
     meta_model.fit(train_meta_features, y_train_balanced)
     
     # Get meta-model coefficients
@@ -355,12 +355,12 @@ def print_report(metrics, cm, model_name="Stacked Ensemble"):
     print(f"{model_name} - PERFORMANCE REPORT")
     print("=" * 70)
     
-    print(f"\n📊 Model Configuration:")
+    print(f"\nModel Configuration:")
     print(f"   Base Models: XGBoost, Random Forest, Gradient Boosting, AdaBoost")
     print(f"   Meta-Model: Logistic Regression")
     print(f"   Imbalance Handling: SMOTE-Tomek")
     
-    print(f"\n🎯 Performance Metrics:")
+    print(f"\nPerformance Metrics:")
     print(f"   Accuracy:  {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.1f}%)")
     print(f"   Precision: {metrics['precision']:.4f} ({metrics['precision']*100:.1f}%)")
     print(f"   Recall:    {metrics['recall']:.4f} ({metrics['recall']*100:.1f}%)")
@@ -368,25 +368,20 @@ def print_report(metrics, cm, model_name="Stacked Ensemble"):
     print(f"   AUC-ROC:   {metrics['auc']:.4f}")
     print(f"   Optimal Threshold: {metrics['best_threshold']:.3f}")
     
-    print(f"\n📊 Confusion Matrix:")
-    print(f"   ┌─────────────────────┬─────────┬─────────┐")
-    print(f"   │                     │ Predicted Paid │ Predicted Default │")
-    print(f"   ├─────────────────────┼─────────┼─────────┤")
-    print(f"   │ Actual Paid         │   {cm[0,0]:5}   │    {cm[0,1]:5}    │")
-    print(f"   ├─────────────────────┼─────────┼─────────┤")
-    print(f"   │ Actual Default      │   {cm[1,0]:5}   │    {cm[1,1]:5}    │")
-    print(f"   └─────────────────────┴─────────┴─────────┘")
+    print(f"\nConfusion Matrix:")
+    print(f"   Actual Paid    -> Predicted Paid: {cm[0,0]:5d} | Predicted Default: {cm[0,1]:5d}")
+    print(f"   Actual Default -> Predicted Paid: {cm[1,0]:5d} | Predicted Default: {cm[1,1]:5d}")
     
     # Interpretation
-    print(f"\n📈 Interpretation:")
+    print(f"\nInterpretation:")
     if metrics['auc'] >= 0.85:
-        print(f"   ✅ Excellent discrimination (AUC > 0.85)")
+        print(f"   Excellent discrimination (AUC > 0.85)")
     elif metrics['auc'] >= 0.75:
-        print(f"   📊 Good discrimination (AUC > 0.75)")
+        print(f"   Good discrimination (AUC > 0.75)")
     elif metrics['auc'] >= 0.65:
-        print(f"   📈 Acceptable discrimination (AUC > 0.65)")
+        print(f"   Acceptable discrimination (AUC > 0.65)")
     else:
-        print(f"   ⚠️ Poor discrimination - model needs improvement")
+        print(f"   Poor discrimination - model needs improvement")
 
 # ============================================================
 # SECTION 5: MAIN PIPELINE
@@ -399,7 +394,7 @@ def main():
     df = extract_data()
     
     if len(df) < 200:
-        print(f"\n❌ Insufficient data: {len(df)} records (need 200+)")
+        print(f"\nInsufficient data: {len(df)} records (need 200+)")
         return
     
     # Step 2: Engineer features
@@ -423,14 +418,14 @@ def main():
     X = df[available]
     y = df['default_flag']
     
-    print(f"\n📊 Feature matrix: {X.shape[1]} features, {X.shape[0]} samples")
+    print(f"\nFeature matrix: {X.shape[1]} features, {X.shape[0]} samples")
     
     # Step 4: Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
     
-    print(f"\n📊 Data Split:")
+    print(f"\nData Split:")
     print(f"   Training: {len(X_train)} samples ({y_train.mean()*100:.1f}% default)")
     print(f"   Test: {len(X_test)} samples ({y_test.mean()*100:.1f}% default)")
     
@@ -450,11 +445,12 @@ def main():
         'scaler': scaler,
         'feature_names': available,
         'best_threshold': metrics['best_threshold'],
-        'performance': metrics
+        'performance': metrics,
+        'confusion_matrix': cm.tolist()
     }, 'models/stacked_ensemble_final.pkl')
     
     print("\n" + "=" * 70)
-    print("✅ Stacked Ensemble saved to 'models/stacked_ensemble_final.pkl'")
+    print("Stacked Ensemble saved to 'models/stacked_ensemble_final.pkl'")
     print("=" * 70)
     
     # Step 8: Compare with individual base models
@@ -470,13 +466,6 @@ def main():
         print(f"   {name}: AUC = {auc:.4f}")
     
     print(f"\n   Stacked Ensemble: AUC = {metrics['auc']:.4f}")
-    
-    improvement = ((metrics['auc'] - max([roc_auc_score(y_test, model.predict_proba(scaler.transform(X_test))[:, 1]) 
-                                          for model in base_models.values()])) / 
-                   max([roc_auc_score(y_test, model.predict_proba(scaler.transform(X_test))[:, 1]) 
-                        for model in base_models.values()]) * 100)
-    
-    print(f"\n📈 Improvement over best base model: {improvement:+.1f}%")
 
 if __name__ == "__main__":
     from config.settings import DB_CONFIG
