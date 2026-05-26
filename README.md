@@ -1,7 +1,7 @@
-# XDSData Ghana - NPL Management Dashboard
+# NPL Management Dashboard
 
 ## Overview
-A real-time dashboard for monitoring Non-Performing Loans (NPLs) at XDSData Ghana. Provides insights into lender performance, loan purpose risk analysis, and real-time loan stacking prevention.
+A real-time dashboard for monitoring Non-Performing Loans (NPLs) at JDan Financial Analytics. Provides insights into lender performance, loan purpose risk analysis, and real-time loan stacking prevention.
 
 ## Features
 - Executive Summary with key metrics
@@ -15,8 +15,6 @@ A real-time dashboard for monitoring Non-Performing Loans (NPLs) at XDSData Ghan
 ## Installation
 
 ### Local Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/xdsdata/dashboard.git
-cd xds_dashboard
+git clone https://github.com/JDanFinancialAnalytics/npl-dashboard.git
+cd npl-dashboard
